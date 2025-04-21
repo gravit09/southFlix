@@ -1,14 +1,16 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Dimensions,
   ActivityIndicator,
   Text,
   Animated,
+  TouchableOpacity,
 } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import sample from "../data/sample.json";
 
@@ -20,6 +22,7 @@ const Movie = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [isFavourited, setIsFavourited] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const movie = sample.find((item) => item.id === id);
@@ -54,6 +57,51 @@ const Movie = () => {
       router.back();
     }
   };
+
+  const isFavourite = async () => {
+    try {
+      const favourites = await AsyncStorage.getItem("favourites");
+      if (favourites) {
+        const parsedFavourites = JSON.parse(favourites);
+        const isFavourited = parsedFavourites.some(
+          (item: any) => item.id === id
+        );
+        setIsFavourited(isFavourited);
+      }
+    } catch (error) {
+      console.error("Error checking favourites:", error);
+    }
+  };
+
+  const toggleFavourite = async () => {
+    try {
+      const favourites = await AsyncStorage.getItem("favourites");
+      const parsedFavourites = favourites ? JSON.parse(favourites) : [];
+      if (isFavourited) {
+        const updatedFavourites = parsedFavourites.filter(
+          (item: any) => item.id !== id
+        );
+        await AsyncStorage.setItem(
+          "favourites",
+          JSON.stringify(updatedFavourites)
+        );
+        setIsFavourited(false);
+      } else {
+        const updatedFavourites = [...parsedFavourites, movie];
+        await AsyncStorage.setItem(
+          "favourites",
+          JSON.stringify(updatedFavourites)
+        );
+        setIsFavourited(true);
+      }
+    } catch (error) {
+      console.error("Error toggling favourites:", error);
+    }
+  };
+
+  useEffect(() => {
+    isFavourite();
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-black">
@@ -120,6 +168,14 @@ const Movie = () => {
               <Text className="text-white font-semibold">Duration: </Text>
               <Text className="text-gray-400">{movie?.duration}</Text>
             </View>
+            <TouchableOpacity
+              className="mt-4 bg-gray-500 rounded-full px-4 py-4"
+              onPress={toggleFavourite}
+            >
+              <Text className="text-white text-center font-semibold">
+                {isFavourited ? "Remove Favourite" : "Add to Favourite"}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Animated.ScrollView>
