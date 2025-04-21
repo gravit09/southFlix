@@ -1,4 +1,3 @@
-import { View, Text } from "react-native";
 import { Tabs } from "expo-router";
 import React from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -9,9 +8,21 @@ export default function TabsLayout() {
       screenOptions={{
         tabBarActiveTintColor: "white",
         tabBarInactiveTintColor: "gray",
-        tabBarStyle: { backgroundColor: "black" },
-        tabBarLabelStyle: { fontSize: 12 },
-        tabBarIconStyle: { marginTop: -5 },
+        tabBarStyle: {
+          backgroundColor: "black",
+          borderTopWidth: 0,
+          elevation: 0,
+          height: 90,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          marginTop: 2,
+        },
+        tabBarIconStyle: {
+          marginTop: -1,
+        },
         headerShown: false,
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
@@ -45,11 +56,11 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="history"
         options={{
-          title: "Profile",
+          title: "History",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="person" color={color} size={size} />
+            <MaterialIcons name="history" color={color} size={size} />
           ),
         }}
       />

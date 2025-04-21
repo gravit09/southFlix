@@ -3,9 +3,14 @@ import "./global.css";
 
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="movie/[id]" options={{ headerShown: false }} />
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: "black" },
+      }}
+    >
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="movies/[id]" />
     </Stack>
   );
 }
